@@ -88,23 +88,6 @@ def ConvNN(_input, Image_Height=480, Image_Width=720, num_of_channels=3,
                    class_count=4):
 
     _input = tf.reshape(_input, shape = [-1, Image_Height, Image_Width , num_of_channels])
-    '''
-    weights = {'conv_1_weights':tf.Variable(tf.random_normal([w1,w1,num_of_channels,wc1]), name='w1'),
-               'conv_2_weights':tf.Variable(tf.random_normal([w2,w2,wc1,wc2]), name='w2'),
-               'conv_3_weights':tf.Variable(tf.random_normal([w3,w3,wc2,wc3]), name='w3'),
-               'conv_4_weights':tf.Variable(tf.random_normal([w4,w4,wc3,wc4]), name='w4'),
-               'conv_5_weights':tf.Variable(tf.random_normal([w5,w5,wc4,wc5]), name='w5'),
-               'w_fully_connected':tf.Variable(tf.random_normal([int(fulllyConnectedInputSize), hiddenLayerSize]), name='fc'),
-               'w_output':tf.Variable(tf.random_normal([hiddenLayerSize,class_count]), name='output')}
-
-    biases = {'conv_1_biases':tf.Variable(tf.random_normal([wc1]), name='b1'),
-              'conv_2_biases':tf.Variable(tf.random_normal([wc2]), name='b2'),
-              'conv_3_biases':tf.Variable(tf.random_normal([wc3]), name='b3'),
-              'conv_4_biases':tf.Variable(tf.random_normal([wc4]), name='b4'),
-              'conv_5_biases':tf.Variable(tf.random_normal([wc5]), name='b5'),
-              'b_fully_connected':tf.Variable(tf.random_normal([hiddenLayerSize]), name='b_fc'),
-              'b_output':tf.Variable(tf.random_normal([class_count]), name='b_out')}
-    '''
 
     #CONVOLUTION LAYER
     conv1 = Convolution2D(_input, weights['conv_1_weights'], _name='conv1')
@@ -180,22 +163,7 @@ def TrainConvNN(x, lr=0.001, epoch_count=20, batch_size=50,
 
         print('Epoch',epoch + 1, 'Completed with ', EPOCH_COUNT, 'loss : ',loss)
     saver.save(sess=session, save_path=save_path)
-    '''
-        correctClassified1 = tf.equal(tf.argmax(prediction,1),tf.argmax(y,1))
-        accuracy = tf.reduce_mean(tf.cast(correctClassified1,'float'))
-        print('Accuracy : ',accuracy.eval({x:test_x[:200], y:test_y[:200]}))
 
-        correctClassified2 = tf.equal(tf.argmax(prediction,1),tf.argmax(y,1))
-        accuracy2 = tf.reduce_mean(tf.cast(correctClassified2,'float'))
-        print('Acc 2 : ', accuracy2.eval({x:test_x[200:400], y:test_y[200:400]}))
-        #writer = tr.train.SummaryWriter("/home/ugur/jupyter/RedzhepDL/HistologyDS/logs/",sess.graph)
-
-        correctClassified3 = tf.equal(tf.argmax(prediction,1), tf.argmax(y,1))
-        accuracy3 = tf.reduce_mean(tf.cast(correctClassified3,'float'))
-        print('Acc 3 :', accuracy3.eval({x:test_x[400:500], y:test_y[400:500]}))
-
-        saver.save(sess, 'hist_test_model',global_step=1000)
-    '''
 config={"EPS": 1e-7}
 
 def image_normalization(image, s = 0.1, ubound = 255.0):
@@ -234,14 +202,8 @@ def save_featuremaps(units, path):
     return image_names
 
 def evaluate(xa, ya):
-    #with tf.Session() as sess:
-    #sess=tf.Session()
-    #saver = tf.train.import_meta_graph('hist_test_model-1000.meta')
     saver.restore(sess=session, save_path=save_path)
     
-    #tf.initialize_all_variables().run(session=sess)
-
-    #TrainConvNN(x)
     model, c1, c2, c3, c4, c5 = ConvNN(x)    
     #sess.run(tf.global_variables_initializer())
     correctClassified1 = tf.equal(tf.argmax(model,1),tf.argmax(y,1))
